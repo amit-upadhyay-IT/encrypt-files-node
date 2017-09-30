@@ -2,6 +2,7 @@ var crypto = require('crypto'),
     algorithm = 'aes-256-ctr',
     password = 'd6FAjkdlfAjk';
 
+var stream = require('stream');
 var fs = require('fs');
 var zlib = require('zlib');
 
@@ -24,12 +25,24 @@ var decrypt = crypto.createDecipheriv(algorithm, password, iv)
 var unzip = zlib.createGunzip();
 // write file
 var w = fs.createWriteStream('file.out');
-w.write(hexiv+':');
+var Readable = stream.Readable;
+var s = new Readable();
+s._read = function noop() {};
+s.push(hexiv+':');
+s.push(null);
+s.pipe(zip).pipe(w);
 
 // start pipe
 //r.pipe(zip).pipe(encrypt).pipe(decrypt).pipe(unzip).pipe(w);
 
-r.pipe(zip).pipe(encrypt).pipe(w);
+s.on('end', function(){
+    r.pipe(zip).pipe(encrypt).pipe(w);
+    r.on('error', function (err) {
+        console.log('error ', err);
+    });
+});
+
+//r.pipe(zip).pipe(encrypt).pipe(w);
 
 function get16Bytes(text)
 {
