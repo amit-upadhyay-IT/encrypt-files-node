@@ -1,6 +1,6 @@
 var crypto = require('crypto'),
     algorithm = 'aes-256-ctr',
-    password = 'd6F3Efeq';
+    password = 'd6FAjkdlfAjk';
 
 var fs = require('fs');
 var zlib = require('zlib');
