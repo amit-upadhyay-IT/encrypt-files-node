@@ -5,32 +5,46 @@ var crypto = require('crypto'),
 var fs = require('fs');
 var zlib = require('zlib');
 
-var iv = new Buffer(get16Bytes(password));
+var inputFilePath = 'file.out';
+
 password = get32Bytes(password);
 
+readFirstLine(inputFilePath);
 
-// input file
-var r = fs.createReadStream('file.out');
-// zip content
-var zip = zlib.createGzip();
-// encrypt content
-var encrypt = crypto.createCipheriv(algorithm, password, iv);
-// decrypt content
-var decrypt = crypto.createDecipheriv(algorithm, password, iv)
-// unzip content
-var unzip = zlib.createGunzip();
-// write file
-var w = fs.createWriteStream('file.out.test');
-
-// start pipe
-r.pipe(decrypt).pipe(unzip).pipe(w);
-
-
-function get16Bytes(text)
+function readFirstLine(path)
 {
-    while (text.length <= 16)
-        text += text;
-    return text.substr(0, 16);
+    var rs = fs.createReadStream(path, {encoding:'utf8'});
+    var actual_iv = "";
+    rs.on('data', function (chunk) {
+        var index = chunk.indexOf(':');
+        actual_iv = chunk.substr(0, index);
+        rs.close();
+    });
+    rs.on('close', function () {
+        // call the function which requires main concern
+        decryptTheFile(new Buffer(actual_iv, 'hex'));
+    });
+}
+
+function decryptTheFile(iv)
+{
+
+    // input file
+    var r = fs.createReadStream('file.out');
+    // zip content
+    var zip = zlib.createGzip();
+    // encrypt content
+    var encrypt = crypto.createCipheriv(algorithm, password, iv);
+    // decrypt content
+    var decrypt = crypto.createDecipheriv(algorithm, password, iv);
+    // unzip content
+    var unzip = zlib.createGunzip();
+    // write file
+    var w = fs.createWriteStream('file.out.test');
+
+    // start pipe
+    r.pipe(decrypt).pipe(unzip).pipe(w);
+
 }
 
 function get32Bytes(text)
@@ -39,3 +53,4 @@ function get32Bytes(text)
         text += text;
     return text.substr(0,32);
 }
+

@@ -24,6 +24,7 @@ var decrypt = crypto.createDecipheriv(algorithm, password, iv)
 var unzip = zlib.createGunzip();
 // write file
 var w = fs.createWriteStream('file.out');
+w.write(hexiv+':');
 
 // start pipe
 //r.pipe(zip).pipe(encrypt).pipe(decrypt).pipe(unzip).pipe(w);
