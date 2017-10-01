@@ -58,6 +58,12 @@ function doFileEncryption(filePath)
     //r.pipe(zip).pipe(encrypt).pipe(decrypt).pipe(unzip).pipe(w);
 
     r.pipe(zip).pipe(encrypt).pipe(w);
+
+    r.on('end', function() {
+        fs.unlink(filePath, function(err){
+            if (err) console.log(err);
+        });
+    });
 }
 
 function get32Bytes(text)
