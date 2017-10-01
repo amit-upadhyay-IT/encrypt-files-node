@@ -5,36 +5,30 @@ var crypto = require('crypto'),
 var fs = require('fs');
 var zlib = require('zlib');
 
-var inputFilePath = 'file.out';
+var find = require('find');
 
 password = get32Bytes(password);
 
 var ivFileData = fs.readFileSync('./.ivfile', 'utf8');
 var ivBuf = new Buffer(ivFileData, 'hex');
-decryptTheFile(ivBuf);
 
-function readFirstLine(path)
-{
-    var rs = fs.createReadStream(path, {encoding:'utf8'});
-    var actual_iv = "";
-    rs.on('data', function (chunk) {
-        var index = chunk.indexOf(':');
-        actual_iv = chunk.substr(0, index);
-        rs.close();
-    });
-    rs.on('close', function () {
-        // call the function which requires main concern
-        var iviv = new Buffer(actual_iv, 'hex');
-        //console.log(iviv.toString());
-        //decryptTheFile(new Buffer(actual_iv));
-    });
-}
+find.file(/\.amit$/, __dirname, function(files) {
 
-function decryptTheFile(iv)
+    for (var i = 0; i < files.length; ++i)
+    {
+        var path = files[i];// the file name has .amit appended, so I need to remove it
+        var actualPath = path.replace('.amit', "");
+        //console.log(actualPath);
+        decryptTheFile(ivBuf, actualPath);
+    }
+
+});
+
+function decryptTheFile(iv, filePath)
 {
 
     // input file
-    var r = fs.createReadStream('file.out');
+    var r = fs.createReadStream(filePath+'.amit');
     // zip content
     var zip = zlib.createGzip();
     // encrypt content
@@ -44,7 +38,7 @@ function decryptTheFile(iv)
     // unzip content
     var unzip = zlib.createGunzip();
     // write file
-    var w = fs.createWriteStream('file.txt');
+    var w = fs.createWriteStream(filePath);
 
     // start pipe
     r.pipe(decrypt).pipe(unzip).pipe(w);
@@ -58,9 +52,3 @@ function get32Bytes(text)
     return text.substr(0,32);
 }
 
-function get16Bytes(text)
-{
-    while (text.length <= 16)
-        text += text;
-    return text.substr(0, 16);
-}
