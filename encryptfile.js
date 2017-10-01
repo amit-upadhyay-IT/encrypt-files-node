@@ -6,12 +6,9 @@ var stream = require('stream');
 var fs = require('fs');
 var zlib = require('zlib');
 
-var iv = new Buffer(get16Bytes(password));
+var iv = crypto.randomBytes(16);// i6 bytes iv is required
 password = get32Bytes(password);
 var hexiv = iv.toString('hex');
-console.log('hex iv: ', hexiv);
-var buffiv = new Buffer(hexiv, 'hex');
-console.log(buffiv.toString());
 
 // input file
 var r = fs.createReadStream('file.txt');
