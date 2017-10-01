@@ -44,7 +44,7 @@ function decryptTheFile(iv)
     // unzip content
     var unzip = zlib.createGunzip();
     // write file
-    var w = fs.createWriteStream('file.out.test');
+    var w = fs.createWriteStream('file.txt');
 
     // start pipe
     r.pipe(decrypt).pipe(unzip).pipe(w);
