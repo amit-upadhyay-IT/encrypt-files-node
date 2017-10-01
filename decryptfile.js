@@ -18,13 +18,14 @@ find.file(/\.amit$/, __dirname, function(files) {
     {
         var path = files[i];// the file name has .amit appended, so I need to remove it
         var writablePath = path.replace('.amit', "");
-        //console.log(actualPath);
+        //console.log(writablePath);
+        //console.log(files[i]);
         decryptTheFile(ivBuf, files[i], writablePath);
     }
 
 });
 
-function decryptTheFile(iv, filePath)
+function decryptTheFile(iv, filePath, writablePath)
 {
 
     // input file
