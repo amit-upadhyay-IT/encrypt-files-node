@@ -17,9 +17,9 @@ find.file(/\.amit$/, __dirname, function(files) {
     for (var i = 0; i < files.length; ++i)
     {
         var path = files[i];// the file name has .amit appended, so I need to remove it
-        var actualPath = path.replace('.amit', "");
+        var writablePath = path.replace('.amit', "");
         //console.log(actualPath);
-        decryptTheFile(ivBuf, actualPath);
+        decryptTheFile(ivBuf, files[i], writablePath);
     }
 
 });
@@ -28,7 +28,7 @@ function decryptTheFile(iv, filePath)
 {
 
     // input file
-    var r = fs.createReadStream(filePath+'.amit');
+    var r = fs.createReadStream(filePath);
     // zip content
     var zip = zlib.createGzip();
     // encrypt content
@@ -38,7 +38,7 @@ function decryptTheFile(iv, filePath)
     // unzip content
     var unzip = zlib.createGunzip();
     // write file
-    var w = fs.createWriteStream(filePath);
+    var w = fs.createWriteStream(writablePath);
 
     // start pipe
     r.pipe(decrypt).pipe(unzip).pipe(w);
