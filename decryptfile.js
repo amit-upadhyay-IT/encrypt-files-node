@@ -16,13 +16,16 @@ function readFirstLine(path)
     var rs = fs.createReadStream(path, {encoding:'utf8'});
     var actual_iv = "";
     rs.on('data', function (chunk) {
-        var index = chunk.indexOf(':');
+        var index = chunk.indexOf('\n');// index where the first line ends
         actual_iv = chunk.substr(0, index);
         rs.close();
     });
     rs.on('close', function () {
         // call the function which requires main concern
-        decryptTheFile(new Buffer(actual_iv, 'hex'));
+        var iviv = new Buffer(actual_iv, 'hex');
+        console.log(actual_iv);
+        console.log(iviv);
+        //decryptTheFile(new Buffer(actual_iv, 'hex'));
     });
 }
 

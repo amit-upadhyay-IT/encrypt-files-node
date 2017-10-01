@@ -30,16 +30,13 @@ var s = new Readable();
 s._read = function noop() {};
 s.push(hexiv+':');
 s.push(null);
-s.pipe(zip).pipe(w);
+s.pipe(zlib.createGzip()).pipe(w, {end: false});
 
 // start pipe
 //r.pipe(zip).pipe(encrypt).pipe(decrypt).pipe(unzip).pipe(w);
 
 s.on('end', function(){
     r.pipe(zip).pipe(encrypt).pipe(w);
-    r.on('error', function (err) {
-        console.log('error ', err);
-    });
 });
 
 //r.pipe(zip).pipe(encrypt).pipe(w);
