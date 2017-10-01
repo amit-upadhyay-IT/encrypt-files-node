@@ -25,19 +25,26 @@ var decrypt = crypto.createDecipheriv(algorithm, password, iv)
 var unzip = zlib.createGunzip();
 // write file
 var w = fs.createWriteStream('file.out');
+/*
 var Readable = stream.Readable;
 var s = new Readable();
 s._read = function noop() {};
 s.push(hexiv+':');
 s.push(null);
-s.pipe(zlib.createGzip()).pipe(w, {end: false});
+//s.pipe(zlib.createGzip()).pipe(w, {end: false});// this is one way where I am zipping it without encrypting it, but the question is what would happen to ':' which I have used as a delimiter to get the iv while decryption.
+// So I am directly putting the iv without zipping it.
+s.pipe(w, {end: false});
+*/
 
 // start pipe
 //r.pipe(zip).pipe(encrypt).pipe(decrypt).pipe(unzip).pipe(w);
+r.pipe(zip).pipe(encrypt).pipe(w);
 
+/*
 s.on('end', function(){
     r.pipe(zip).pipe(encrypt).pipe(w);
 });
+*/
 
 //r.pipe(zip).pipe(encrypt).pipe(w);
 

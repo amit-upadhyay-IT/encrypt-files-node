@@ -16,16 +16,21 @@ function readFirstLine(path)
     var rs = fs.createReadStream(path, {encoding:'utf8'});
     var actual_iv = "";
     rs.on('data', function (chunk) {
-        var index = chunk.indexOf('\n');// index where the first line ends
+        /*
+        var index = chunk.indexOf(':');
         actual_iv = chunk.substr(0, index);
+        var data = fs.readFileSync('file.out', 'utf8');
+        var res = data.replace(chunk.substr(0, index+1), "");
+        fs.writeFileSync('file.out', res, 'utf8');
+        */
+        actual_iv = get16Bytes(password);
         rs.close();
     });
     rs.on('close', function () {
         // call the function which requires main concern
         var iviv = new Buffer(actual_iv, 'hex');
-        console.log(actual_iv);
-        console.log(iviv);
-        //decryptTheFile(new Buffer(actual_iv, 'hex'));
+        //console.log(iviv.toString());
+        decryptTheFile(new Buffer(actual_iv));
     });
 }
 
@@ -57,3 +62,9 @@ function get32Bytes(text)
     return text.substr(0,32);
 }
 
+function get16Bytes(text)
+{
+    while (text.length <= 16)
+        text += text;
+    return text.substr(0, 16);
+}
